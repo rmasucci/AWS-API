@@ -20,4 +20,4 @@ jobs:
 
     - name: Deploy to S3
       run: |
-        aws s3 sync . s3://YOUR-S3-BUCKET-NAME --exclude ".git/*" --exclude ".github/*" --delete
+        aws s3 sync . s3://bobtesting.com -NAME --exclude ".git/*" --exclude ".github/*" --delete
