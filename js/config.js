@@ -1,5 +1,5 @@
 const config = {
-    authority: 'https://us-east-1nfpyh8zry.auth.us-east-1.amazoncognito.com',
+    authority: '"https://cognito-idp.us-east-1.amazonaws.com/us-east-1_nfpYH8ZRY",
     domain: 'https://us-east-1nfpyh8zry.auth.us-east-1.amazoncognito.com',
     userPoolId: 'us-east-1_nfpYH8ZRY', // Your User Pool ID
     clientId: '6sd335m3c12tt510u3eu4ve4du',  // Your App Client ID
