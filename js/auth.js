@@ -1,14 +1,14 @@
-const userManager = new Oidc.UserManager({
-    authority: `https://${config.domain}`,
-    client_id: config.clientId,
-    redirect_uri: config.redirectUri,
-    response_type: 'code',
-    scope: 'openid email profile',
-    filterProtocolClaims: true,
-    loadUserInfo: true,
-    post_logout_redirect_uri: config.postLogoutRedirectUri
+document.addEventListener('DOMContentLoaded', () => {
+    const userManager = new Oidc.UserManager({
+        authority: `https://${config.domain}`,
+        client_id: config.clientId,
+        redirect_uri: config.redirectUri,
+        response_type: 'code',
+        scope: 'openid email profile',
+        filterProtocolClaims: true,
+        loadUserInfo: true
+    });
 });
-
 // Handle login button click
 function login() {
     userManager.signinRedirect();
