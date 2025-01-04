@@ -17,9 +17,9 @@
     <script>
         // Ensure the DOM and scripts are fully loaded before executing handleCallback
         document.addEventListener('DOMContentLoaded', () => {
-            if (typeof userManager !== 'undefined') {
+            if (typeof window.userManager !== 'undefined') {
                 // Pass userManager to handleCallback
-                handleCallback(userManager);
+                handleCallback(window.userManager);
             } else {
                 console.error('userManager is not defined. Check auth.js initialization.');
                 alert('Authentication failed: userManager not initialized. Redirecting to login page.');
