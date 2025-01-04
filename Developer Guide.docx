@@ -1,0 +1,166 @@
+Developer Guide: Setting Up Web Application with AWS Cognito Authentication
+
+Overview
+This guide outlines how to implement secure authentication using AWS Cognito in a web application, based on our calculator example.
+
+AWS Configuration Steps
+1. Create Cognito User Pool
+•	Go to AWS Cognito Console
+•	Create User Pool
+•	Note down: 
+
+User Pool ID: (e.g., us-east-1_nfpYH8ZRY)
+Region: (e.g., us-east-1)
+
+2. Configure App Client
+•	Under your User Pool, create App Client
+•	Settings needed: 
+o	Public client (no secret)
+o	Authorization code grant flow
+o	Note down: App Client ID
+3. Configure Domain
+•	Under "Branding > Domain"
+•	Either use Cognito domain or your own
+•	Note down: Domain URL
+
+
+4. Set OAuth/OIDC Settings
+Allowed callback URLs:
+https://your-domain.com/callback.html
+
+Sign-out URLs:
+https://your-domain.com/index.html
+
+OAuth Scopes:
+- openid
+- email
+- profile
+
+Frontend Implementation
+1. Required Files Structure
+Copy
+/your-app
+  ├── index.html      (login page)
+  ├── callback.html   (OAuth callback handler)
+  ├── app.html        (protected application page)
+  ├── js/
+  │   ├── config.js   (AWS configuration)
+  │   ├── auth.js     (authentication logic)
+  │   └── app.js      (application logic)
+  └── css/
+      └── styles.css
+2. Configuration (config.js)
+javascript
+Copy
+const config = {
+    userPoolId: 'your-user-pool-id',
+    clientId: 'your-client-id',
+    domain: 'your-cognito-domain.auth.region.amazoncognito.com',
+    region: 'your-region',
+    redirectUri: 'https://your-domain.com/callback.html',
+    signoutUri: 'https://your-domain.com/index.html'
+};
+3. Required Script References
+html
+Copy
+<!-- AWS SDK -->
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1024.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.7/dist/amazon-cognito-identity.min.js"></script>
+Authentication Flow
+1. Login Flow
+javascript
+Copy
+function signIn() {
+    const authUrl = `https://${config.domain}/login?` +
+        `client_id=${config.clientId}&` +
+        `response_type=code&` +
+        `scope=openid+email+profile&` +
+        `redirect_uri=${encodeURIComponent(config.redirectUri)}`;
+    
+    window.location.href = authUrl;
+}
+2. Callback Handling
+javascript
+Copy
+async function handleCallback() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    // Exchange code for tokens
+    // Store tokens securely
+    // Redirect to app
+}
+3. Logout Flow
+javascript
+Copy
+function signOut() {
+    const signOutUrl = `https://${config.domain}/logout?` +
+        `client_id=${config.clientId}&` +
+        `logout_uri=${encodeURIComponent(config.signoutUri)}`;
+    
+    window.location.href = signOutUrl;
+}
+API Integration
+1. Protected API Calls
+javascript
+Copy
+async function callProtectedAPI() {
+    const response = await fetch('your-api-endpoint', {
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+    });
+}
+2. Error Handling
+javascript
+Copy
+try {
+    // API calls
+} catch (error) {
+    if (error.status === 401) {
+        // Handle unauthorized
+        redirectToLogin();
+    }
+    // Handle other errors
+}
+
+Security Considerations
+1.	Token Storage 
+o	Use secure storage for tokens
+o	Clear tokens on logout
+o	Implement token refresh
+2.	HTTPS 
+o	Always use HTTPS for production
+o	Configure secure headers
+o	Enable CORS appropriately
+3.	Error Handling 
+o	Implement proper error messages
+o	Log security events
+o	Handle token expiration
+Deployment Steps
+1.	Configure CloudFront 
+o	HTTPS required
+o	Proper cache settings
+o	Error page handling
+2.	S3 Configuration 
+o	Static website hosting
+o	Proper bucket policy
+o	CORS configuration
+3.	CI/CD Pipeline 
+o	GitHub Actions configuration
+o	Automatic deployment
+o	Environment variables
+Testing Checklist
+1.	Authentication Flow 
+o	Sign-in redirects to Cognito
+o	Callback handles tokens
+o	Sign-out clears session
+2.	API Integration 
+o	Protected endpoints require token
+o	Token expiration handled
+o	Error responses handled
+3.	Security 
+o	HTTPS enforced
+o	Tokens stored securely
+o	CORS configured properly
+
