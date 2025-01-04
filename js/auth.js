@@ -1,26 +1,28 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize the OIDC User Manager with the configuration settings.
     const userManager = new Oidc.UserManager({
-        authority: `https://${config.domain}`,
-        client_id: config.clientId,
-        redirect_uri: config.redirectUri,
-        response_type: 'code',
-        scope: 'openid email profile',
-        filterProtocolClaims: true,
-        loadUserInfo: true
+        authority: `https://${config.domain}`, // The authorization server's base URL.
+        client_id: config.clientId,           // The client ID of the Cognito app.
+        redirect_uri: config.redirectUri,     // The URI to redirect to after login.
+        response_type: 'code',                // The OAuth response type, requesting an authorization code.
+        scope: 'openid email profile',        // The scopes requested during authentication.
+        filterProtocolClaims: true,           // Filters out protocol claims from the user info.
+        loadUserInfo: true                    // Automatically loads additional user info after login.
     });
 
-    // Attach login button event
+    // Attach login functionality to the login button if it exists on the page.
     const loginButton = document.getElementById('loginButton');
     if (loginButton) {
         loginButton.addEventListener('click', () => login(userManager));
     }
 
-    // If on the callback page, handle the OAuth callback
+    // Handle the OAuth callback if the current page is the callback page.
     if (window.location.pathname.includes('callback.html')) {
         handleCallback(userManager);
     }
 
-    // If on the app page, check authentication
+    // On the app page, check if the user is authenticated.
+    // If authenticated, display the user's email in the UI.
     if (window.location.pathname.includes('app.html')) {
         checkAuth(userManager).then(user => {
             if (user) {
@@ -33,46 +35,47 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Handle login button click
+// Initiates the login process by redirecting to the authorization server.
 function login(userManager) {
     userManager.signinRedirect().catch(error => {
-        console.error('Login failed:', error);
+        console.error('Login failed:', error); // Logs any error during the login process.
     });
 }
 
-// Handle OAuth callback
+// Handles the callback after the authorization server redirects back to the app.
 async function handleCallback(userManager) {
     try {
-        const user = await userManager.signinRedirectCallback();
-        console.log('Callback successful:', user);
-        window.location.href = '/app.html';
+        const user = await userManager.signinRedirectCallback(); // Completes the login process and retrieves user info.
+        console.log('Callback successful:', user);              // Logs the successfully retrieved user info.
+        window.location.href = '/app.html';                     // Redirects the user to the main app page.
     } catch (error) {
-        console.error('Callback error:', error);
-        alert('Authentication failed. Redirecting to login page.');
-        window.location.href = '/index.html';
+        console.error('Callback error:', error);                // Logs any error that occurs during the callback.
+        alert('Authentication failed. Redirecting to login page.'); // Alerts the user of the failure.
+        window.location.href = '/index.html';                   // Redirects to the login page.
     }
 }
 
-// Check if user is authenticated
+// Checks if the user is authenticated.
+// If not, redirects to the login page.
 async function checkAuth(userManager) {
     try {
-        const user = await userManager.getUser();
+        const user = await userManager.getUser(); // Retrieves the current user's details.
         if (!user) {
-            console.warn('No user found. Redirecting to login page.');
-            window.location.href = '/index.html';
+            console.warn('No user found. Redirecting to login page.'); // Warns if no user is found.
+            window.location.href = '/index.html';                      // Redirects to the login page.
             return null;
         }
-        return user;
+        return user; // Returns the authenticated user.
     } catch (error) {
-        console.error('Auth check failed:', error);
-        window.location.href = '/index.html';
+        console.error('Auth check failed:', error); // Logs any error during the authentication check.
+        window.location.href = '/index.html';      // Redirects to the login page if an error occurs.
         return null;
     }
 }
 
-// Handle logout
+// Initiates the logout process by redirecting to the logout endpoint.
 function logout(userManager) {
     userManager.signoutRedirect().catch(error => {
-        console.error('Logout failed:', error);
+        console.error('Logout failed:', error); // Logs any error during the logout process.
     });
 }
