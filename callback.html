@@ -3,16 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authentication</title>
+    <title>Authentication Callback</title>
 </head>
 <body>
-    <div>Processing login...</div>
+    <div aria-live="polite">Processing login... Please wait.</div>
 
+    <!-- Include OIDC client library -->
     <script src="https://cdn.jsdelivr.net/npm/oidc-client@1.11.5/lib/oidc-client.min.js"></script>
+    <!-- Include config.js for app configuration -->
     <script src="js/config.js"></script>
+    <!-- Include auth.js for authentication logic -->
     <script src="js/auth.js"></script>
     <script>
-        handleCallback();
+        // Ensure the DOM and scripts are fully loaded before executing handleCallback
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof userManager !== 'undefined') {
+                // Pass userManager to handleCallback
+                handleCallback(userManager);
+            } else {
+                console.error('userManager is not defined. Check auth.js initialization.');
+                alert('Authentication failed: userManager not initialized. Redirecting to login page.');
+                window.location.href = '/index.html';
+            }
+        });
     </script>
 </body>
 </html>
