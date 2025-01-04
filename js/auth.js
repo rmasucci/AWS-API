@@ -45,15 +45,17 @@ function login(userManager) {
 // Handles the callback after the authorization server redirects back to the app.
 async function handleCallback(userManager) {
     try {
-        const user = await userManager.signinRedirectCallback(); // Completes the login process and retrieves user info.
-        console.log('Callback successful:', user);              // Logs the successfully retrieved user info.
-        window.location.href = '/app.html';                     // Redirects the user to the main app page.
+        const user = await userManager.signinRedirectCallback(); // Attempt to complete the login process
+        console.log('Callback successful:', user);
+        window.location.href = '/app.html'; // Redirect to the app on success
     } catch (error) {
-        console.error('Callback error:', error);                // Logs any error that occurs during the callback.
-        alert('Authentication failed. Redirecting to login page.'); // Alerts the user of the failure.
-        window.location.href = '/index.html';                   // Redirects to the login page.
+        console.error('Callback error:', error.message); // Log the error message
+        console.error('Callback error stack:', error.stack); // Log the error stack for debugging
+        alert(`Authentication failed: ${error.message}. Redirecting to login page.`);
+        window.location.href = '/index.html'; // Redirect back to the login page
     }
 }
+
 
 // Checks if the user is authenticated.
 // If not, redirects to the login page.
