@@ -12,6 +12,14 @@
     <script src="https://cdn.jsdelivr.net/npm/oidc-client@1.11.5/lib/oidc-client.min.js"></script>
     <!-- Include config.js for app configuration -->
     <script src="js/config.js"></script>
+
+    <script>
+        console.log('Checking if Oidc is available...');
+        console.log('Oidc:', typeof Oidc !== 'undefined' ? Oidc : 'Oidc is undefined');
+    </script>
+    
+
+
     <!-- Include auth.js for authentication logic -->
     <script src="js/auth.js"></script>
     <script>
