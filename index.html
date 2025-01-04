@@ -1,24 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculator Login</title>
+    <title>Calculator with Cognito Auth</title>
     <link rel="stylesheet" href="css/styles.css">
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1024.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.7/dist/amazon-cognito-identity.min.js"></script>
 </head>
 <body>
-    <div class="login-container">
-        <h1>Secure Calculator</h1>
-        <p>Please log in to use the calculator using Cognito without fetching metadata</p>
-        <button id="loginButton">Login with Amazon Cognito</button>
+    <div class="container">
+        <header>
+            <h1>Secure Calculator</h1>
+        </header>
+        <main>
+            <div id="loginSection">
+                <button onclick="signIn()" id="loginButton">Sign In with Cognito</button>
+            </div>
+        </main>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/oidc-client@1.11.5/dist/oidc-client.min.js"></script>
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
-
 </body>
-
-
-
 </html>

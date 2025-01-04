@@ -5,30 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Calculator</title>
     <link rel="stylesheet" href="css/styles.css">
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1024.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.7/dist/amazon-cognito-identity.min.js"></script>
 </head>
 <body>
-    <div class="app-container">
-        <div class="user-info">
-            <span id="userEmail"></span>
-            <button onclick="logout()">Logout</button>
-        </div>
-        
-        <div class="calculator">
-            <h1>Multiplication Calculator</h1>
-            <div class="input-group">
-                <label for="number1">Number 1:</label>
-                <input type="number" id="number1" required>
+    <div class="container">
+        <header>
+            <div class="user-info">
+                <span id="userEmail"></span>
+                <button onclick="signOut()">Sign Out</button>
             </div>
-            <div class="input-group">
-                <label for="number2">Number 2:</label>
-                <input type="number" id="number2" required>
+        </header>
+        <main>
+            <div class="calculator">
+                <h1>Multiplication Calculator</h1>
+                <div class="input-group">
+                    <label for="number1">Number 1:</label>
+                    <input type="number" id="number1" required>
+                </div>
+                <div class="input-group">
+                    <label for="number2">Number 2:</label>
+                    <input type="number" id="number2" required>
+                </div>
+                <button onclick="calculate()">Calculate</button>
+                <p id="result"></p>
             </div>
-            <button onclick="calculate()">Calculate</button>
-            <p id="result"></p>
-        </div>
+        </main>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/oidc-client@1.11.5/lib/oidc-client.min.js"></script>
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/calculator.js"></script>
