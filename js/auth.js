@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize the OIDC User Manager with the configuration settings.
     const userManager = new Oidc.UserManager({
-        authority: `https://${config.domain}`, // The authorization server's base URL.
+        authority: config.authority, // The authorization server's base URL.
         client_id: config.clientId,           // The client ID of the Cognito app.
         redirect_uri: config.redirectUri,     // The URI to redirect to after login.
         response_type: 'code',                // The OAuth response type, requesting an authorization code.
