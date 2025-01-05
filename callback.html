@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authentication Callback</title>
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1024.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.7/dist/amazon-cognito-identity.min.js"></script>
+    <title>Authentication Callback - PKCE Flow</title>
+    <script src="https://cdn.jsdelivr.net/npm/@aws-sdk/client-cognito-identity-provider@3.485.0/dist/index.min.js"></script>
 </head>
 <body>
-    <p>Processing authentication...</p>
+    <p>Processing secure authentication...</p>
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
     <script>
+        // Immediately handle callback to minimize exposure of authorization code
         handleCallback();
     </script>
 </body>

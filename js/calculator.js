@@ -1,27 +1,49 @@
+/**
+ * Calculator module with secure API calls
+ * Implements authentication token handling and input validation
+ */
+
 async function calculate() {
+    if (!checkAuth()) return;
+
     const num1 = document.getElementById('number1').value;
     const num2 = document.getElementById('number2').value;
     const resultElement = document.getElementById('result');
 
+    // Input validation
     if (num1 === '' || num2 === '') {
         resultElement.textContent = 'Please enter both numbers.';
         return;
     }
 
     try {
+        const userEmail = sessionStorage.getItem('userEmail');
+        const accessToken = sessionStorage.getItem('access_token');
+
+        if (!accessToken) {
+            throw new Error('No authentication token available');
+        }
+
         const response = await fetch(config.apiEndpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': sessionStorage.getItem('id_token')
+                'Authorization': `Bearer ${accessToken}`
             },
             body: JSON.stringify({
                 num1: parseFloat(num1),
-                num2: parseFloat(num2)
+                num2: parseFloat(num2),
+                userEmail: userEmail
             })
         });
 
         if (!response.ok) {
+            if (response.status === 401) {
+                // Token might be expired
+                sessionStorage.clear();
+                window.location.href = '/index.html';
+                return;
+            }
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
@@ -32,3 +54,13 @@ async function calculate() {
         resultElement.textContent = 'Error calculating result';
     }
 }
+
+// Set up page on load
+document.addEventListener('DOMContentLoaded', () => {
+    if (checkAuth()) {
+        const userEmail = sessionStorage.getItem('userEmail');
+        if (userEmail) {
+            document.getElementById('userEmail').textContent = userEmail;
+        }
+    }
+});
