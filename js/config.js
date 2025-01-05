@@ -10,8 +10,7 @@ const config = {
 };
 
 // Configure AWS SDK
-<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1230.0.min.js"></script>
-AWS.config.region = config.region;
+//AWS.config.region = config.region;
 
 const poolData = {
     UserPoolId: config.userPoolId,
