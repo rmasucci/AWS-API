@@ -24,7 +24,7 @@ async function calculate() {
             },
             body: JSON.stringify({
                 num1: parseFloat(num1),
-                num2: parseFloat(num2)
+                num2: parseFloat(num2),
                 userEmail: userEmail  // Add email to payload
             })
         });
