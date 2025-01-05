@@ -10,7 +10,7 @@ const config = {
 };
 
 // Configure AWS SDK
-AWS.config.region = config.region;
+//AWS.config.region = config.region;
 const poolData = {
     UserPoolId: config.userPoolId,
     ClientId: config.clientId
