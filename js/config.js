@@ -1,5 +1,6 @@
 const config = {
     userPoolId: 'us-east-1_nfpYH8ZRY',
+    scope: 'openid email profile',
     clientId: '6sd335m3c12tt510u3eu4ve4du',
     domain: 'us-east-1nfpyh8zry.auth.us-east-1.amazoncognito.com',
     region: 'us-east-1',
