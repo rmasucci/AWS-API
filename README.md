@@ -271,3 +271,5 @@ Alert on:
 3. AWS Documentation:
    - [Cognito Developer Guide](https://docs.aws.amazon.com/cognito)
    - [API Gateway Security](https://docs.aws.amazon.com/apigateway)
+
+## Addedum: User login flows
