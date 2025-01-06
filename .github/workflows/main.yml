@@ -22,3 +22,8 @@ jobs:
     - name: Deploy to S3
       run: |
         aws s3 sync . s3://bobtesting.com --exclude ".git/*" --exclude ".github/*" --delete
+
+
+    - name: npm audit action
+        uses: oke-py/npm-audit-action@v2.4.4
+            
