@@ -1,6 +1,8 @@
 
-# AWS Cognito Authentication & Authorization Security Guide
-## Understanding the Security Flow between Client, Cognito, and API Gateway
+# Demonstration for using a Secure Serverless Web Application.
+
+## The Purpose of this repo is to demonstrate a website with an API Gateway that implements best practices for a modern SPA in AW.  It highlights AWS Cognito authentication & authorization security measures used. 
+Understanding the Security Flow between Client, Cognito, and API Gateway
 
 ### Table of Contents
 1. [Overview](#overview)
