@@ -159,14 +159,7 @@ Account Lockout:
 ### Accessibility
 - Clear error messages
 - Keyboard navigation
-- Screen reader support
 - High contrast options
-
-### Mobile Support
-- Responsive design
-- Touch-friendly inputs
-- Clear input fields
-- Mobile-optimized layouts
 
 ## Testing Checklist
 
