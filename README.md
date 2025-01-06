@@ -26,11 +26,11 @@ flowchart LR
     API[API Gateway]
     Lambda[Lambda Function]
 
-    SPA --> |1. Auth Request| Cognito
-    Cognito --> |2. Tokens| SPA
-    SPA --> |3. API Request + Token| API
-    API --> |4. Verify Token| Cognito
-    API --> |5. Execute| Lambda
+    SPA[Browser SPA] --> |1.0 Auth Request| Cognito[Amazon Cognito]
+    Cognito --> |2.0 Tokens| SPA
+    SPA --> |3.0 API Request + Token| API[API Gateway]
+    API --> |4.0 Verify Token| Cognito
+    API --> |5.0 Execute| Lambda[Lambda Function]
 ```
 
 ## Component Interaction Security
