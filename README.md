@@ -20,17 +20,17 @@ This guide details the secure interaction between three key components:
 - API Gateway (Protected Resources)
 
 ```mermaid
-graph LR
+flowchart LR
     SPA[Browser SPA]
     Cognito[Amazon Cognito]
     API[API Gateway]
     Lambda[Lambda Function]
 
-    SPA -->|1. Auth Request| Cognito
-    Cognito -->|2. Tokens| SPA
-    SPA -->|3. API Request + Token| API
-    API -->|4. Verify Token| Cognito
-    API -->|5. Execute| Lambda
+    SPA --> |1. Auth Request| Cognito
+    Cognito --> |2. Tokens| SPA
+    SPA --> |3. API Request + Token| API
+    API --> |4. Verify Token| Cognito
+    API --> |5. Execute| Lambda
 ```
 
 ## Component Interaction Security
@@ -59,22 +59,24 @@ Detailed sequence of the PKCE-protected OAuth 2.0 flow:
 
 ```mermaid
 sequenceDiagram
+    participant User
     participant SPA
+    participant CognitoUI[Cognito Hosted UI]
     participant Cognito
     participant API
     
-    Note over SPA: Generate Code Verifier
-    Note over SPA: Create Code Challenge
-    SPA->>Cognito: Auth Request + Code Challenge + State
+    User->>SPA: Click Login
+    Note over SPA: Generate Code Verifier & Challenge
+    SPA->>CognitoUI: Redirect with PKCE Challenge & State
+    CognitoUI->>User: Display Login Form
+    User->>CognitoUI: Enter Username/Password
+    CognitoUI->>Cognito: Validate Credentials
     Cognito->>SPA: Authorization Code
     Note over SPA: Verify State Parameter
-    SPA->>Cognito: Token Request + Code + Verifier
+    SPA->>Cognito: Exchange Code + Verifier for Tokens
     Cognito->>SPA: Access & ID Tokens
     Note over SPA: Store Tokens Securely
     SPA->>API: Request + Bearer Token
-    API->>Cognito: Validate Token
-    Cognito->>API: Token Valid
-    API->>SPA: Protected Resource
 ```
 
 Key Security Points:
