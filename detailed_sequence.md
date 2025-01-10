@@ -1,33 +1,42 @@
 ```mermaid
 sequenceDiagram
-   participant Client Browser
-   participant App Frontend
-   participant Cognito Auth
-   participant API Gateway
+   participant Browser
+   participant IndexHTML
+   participant AuthJS
+   participant CallbackHTML
+   participant AppHTML
+   participant CalcJS
+   participant Cognito
+   participant APIGateway
 
-   Note over Client Browser,API Gateway: OAuth 2.0 Authorization Code Grant Flow with PKCE
-
-   %% Generate PKCE and Request Auth
-   App Frontend->>App Frontend: Generate code_verifier (128 char random string)<br/>Store in sessionStorage
-   App Frontend->>App Frontend: Generate code_challenge = SHA256(code_verifier)<br/>Base64URL encode
-   App Frontend->>Cognito Auth: GET /oauth2/authorize<br/>client_id, code_challenge, redirect_uri,<br/>response_type=code, scope=openid email profile
+   %% Initial Auth Flow
+   Browser->>IndexHTML: Click "Sign In"
+   IndexHTML->>AuthJS: signIn()
+   AuthJS->>AuthJS: Generate code_verifier (128 char)<br/>Store in sessionStorage
+   AuthJS->>AuthJS: Generate code_challenge = SHA256(verifier)<br/>Base64URL encode
+   AuthJS->>Cognito: GET /oauth2/authorize<br/>client_id, code_challenge,<br/>redirect_uri, response_type=code,<br/>scope=openid email profile
    
-   %% User Authentication 
-   Cognito Auth->>Client Browser: Present login UI
-   Client Browser->>Cognito Auth: Submit credentials
+   %% User Login
+   Cognito->>Browser: Present Cognito Hosted UI
+   Browser->>Cognito: Submit credentials
 
-   %% Exchange Code for Tokens
-   Cognito Auth->>App Frontend: Redirect with authorization_code
-   App Frontend->>App Frontend: Retrieve code_verifier from sessionStorage
-   App Frontend->>Cognito Auth: POST /oauth2/token<br/>code, code_verifier, client_id, redirect_uri
-   Cognito Auth->>App Frontend: Returns access_token, id_token, refresh_token
-   App Frontend->>App Frontend: Store tokens in sessionStorage:<br/>access_token, id_token (JWT format)
+   %% Code Exchange 
+   Cognito->>CallbackHTML: Redirect with authorization_code
+   CallbackHTML->>AuthJS: handleCallback()
+   AuthJS->>AuthJS: Retrieve code_verifier<br/>from sessionStorage
+   AuthJS->>Cognito: POST /oauth2/token<br/>code, code_verifier, client_id
+   Cognito->>AuthJS: Return tokens (JWT format):<br/>access_token, id_token
+   AuthJS->>AuthJS: Store tokens in sessionStorage
+   AuthJS->>AppHTML: Redirect to app.html
 
-   %% Protected API Call
-   Client Browser->>App Frontend: Calculate request
-   App Frontend->>API Gateway: POST /calculate<br/>Authorization: Bearer {access_token}
-   API Gateway->>Cognito Auth: Validate access_token
-   Cognito Auth->>API Gateway: Token valid
-   API Gateway->>App Frontend: Calculation result
+   %% Protected App Flow
+   AppHTML->>CalcJS: Enter calculation
+   CalcJS->>AuthJS: Get access_token
+   AuthJS->>CalcJS: Return token from sessionStorage
+   CalcJS->>APIGateway: POST /calculate<br/>Authorization: Bearer {access_token}
+   APIGateway->>Cognito: Validate token
+   Cognito->>APIGateway: Token valid
+   APIGateway->>CalcJS: Return result
+   CalcJS->>AppHTML: Display result
 
-   Note over Client Browser,API Gateway: Key Security Elements:<br/>1. PKCE prevents auth code interception<br/>2. Tokens stored in sessionStorage (cleared on tab close)<br/>3. JWTs used for id_token & access_token<br/>4. Bearer token auth for API calls
+   Note over Browser,APIGateway: Security Implementation:<br/>1. AuthJS handles PKCE & token management<br/>2. CallbackHTML processes OAuth redirect<br/>3. CalcJS retrieves token for API calls<br/>4. Tokens stored in sessionStorage (cleared on tab close)
