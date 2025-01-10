@@ -1,4 +1,4 @@
-'''mermaid
+```mermaid
 sequenceDiagram
    participant Client Browser
    participant App Frontend
