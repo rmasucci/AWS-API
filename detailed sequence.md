@@ -12,7 +12,7 @@ sequenceDiagram
     Client->>IndexHTML: Access index.html
     IndexHTML->>AuthJS: Load auth.js
     
-    %% Sign In Initiation
+    %% Sign In Flow
     Client->>IndexHTML: Click "Sign In with Cognito"
     IndexHTML->>AuthJS: Call signIn()
     
@@ -21,47 +21,66 @@ sequenceDiagram
     Note over AuthJS: Generate code_challenge<br/>using SHA-256
     Note over AuthJS: Generate state parameter<br/>Store in sessionStorage
     
-    %% Cognito Authorization Request
-    AuthJS->>Cognito: Redirect to /oauth2/authorize with:<br/>client_id, response_type, scope,<br/>redirect_uri, code_challenge, state
-    
-    %% User Authentication
-    Cognito->>Client: Present Cognito hosted UI
+    %% Cognito Authorization
+    AuthJS->>Cognito: Redirect to /oauth2/authorize
+    Cognito->>Client: Present login UI
     Client->>Cognito: Enter credentials
     
-    %% Authorization Code Grant
-    Cognito->>CallbackHTML: Redirect to callback.html with<br/>authorization code & state
-    CallbackHTML->>AuthJS: Load auth.js
-    AuthJS->>AuthJS: handleCallback()
-    Note over AuthJS: Verify state parameter
-    Note over AuthJS: Retrieve code_verifier
+    %% Callback Processing
+    Cognito->>CallbackHTML: Redirect with code & state
+    CallbackHTML->>AuthJS: handleCallback()
+    AuthJS->>Cognito: Exchange code for tokens
+    Cognito->>AuthJS: Return tokens
     
-    %% Token Exchange
-    AuthJS->>Cognito: POST /oauth2/token with<br/>code & code_verifier
-    Cognito->>AuthJS: Return tokens<br/>(access, id, refresh)
-    Note over AuthJS: Store tokens in sessionStorage<br/>Extract user email from id_token
+    %% Protected App Init
     AuthJS->>AppHTML: Redirect to app.html
-    
-    %% Protected App Initialization
     AppHTML->>AuthJS: Load auth.js
     AppHTML->>CalcJS: Load calculator.js
-    AuthJS->>AuthJS: checkAuth()
-    AuthJS->>AppHTML: Display user email
+    
+    %% Page Load Check
+    CalcJS->>AuthJS: checkAuth()
+    alt No valid token
+        AuthJS->>IndexHTML: Redirect to index.html
+    end
+    
+    CalcJS->>AppHTML: Display user email
     
     %% Calculator Operation
     Client->>AppHTML: Enter numbers
     Client->>CalcJS: Click Calculate
+    
+    %% Input Validation
+    Note over CalcJS: Validate input numbers
+    alt Invalid Input
+        CalcJS->>AppHTML: Display validation error
+    end
+    
+    %% API Call with Error Handling
     CalcJS->>AuthJS: Get access token
     
-    %% Protected API Call
-    CalcJS->>APIGateway: POST /calculate with<br/>Bearer token
-    APIGateway->>Cognito: Validate token
-    Cognito->>APIGateway: Token valid
-    APIGateway->>CalcJS: Return result
-    CalcJS->>AppHTML: Display result
+    alt No Token Available
+        CalcJS->>AppHTML: Display auth error
+        CalcJS->>IndexHTML: Redirect to login
+    else Token Available
+        CalcJS->>APIGateway: POST /calculate with Bearer token
+        
+        alt HTTP 401
+            APIGateway->>CalcJS: Unauthorized
+            CalcJS->>AuthJS: Clear session
+            AuthJS->>IndexHTML: Redirect to login
+        else HTTP 200
+            APIGateway->>Cognito: Validate token
+            Cognito->>APIGateway: Token valid
+            APIGateway->>CalcJS: Return calculation
+            CalcJS->>AppHTML: Display result
+        else Other Error
+            APIGateway->>CalcJS: Error response
+            CalcJS->>AppHTML: Display error message
+        end
+    end
     
     %% Sign Out
     Client->>AppHTML: Click Sign Out
-    AppHTML->>AuthJS: Call signOut()
-    Note over AuthJS: Clear sessionStorage
-    AuthJS->>Cognito: Redirect to /logout
-    Cognito->>IndexHTML: Redirect to index.html
+    AppHTML->>AuthJS: signOut()
+    AuthJS->>Cognito: Logout request
+    Cognito->>IndexHTML: Return to index.html
