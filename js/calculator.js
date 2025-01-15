@@ -39,10 +39,14 @@ async function calculate() {
 
         if (!response.ok) {
             if (response.status === 401) {
-                // Token might be expired
-                sessionStorage.clear();
-                window.location.href = '/index.html';
-                return;
+        // Token might be expired
+        console.log('Auth Error Details:', await response.text());  // Log the error response
+        alert('Authentication failed - check console for details'); // Give us time to check
+        sessionStorage.clear();
+        setTimeout(() => {                     // Delay redirect
+            window.location.href = '/index.html';
+        }, 5000);  // 5 second delay
+        return;
             }
             throw new Error(`HTTP error! status: ${response.status}`);
         }
