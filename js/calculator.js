@@ -15,6 +15,10 @@ async function calculate() {
     try {
         const userEmail = sessionStorage.getItem('userEmail');
         const accessToken = sessionStorage.getItem('access_token');
+
+        console.log('Token length:', accessToken ? accessToken.length : 'no token');
+        console.log('Token first 20 chars:', accessToken ? accessToken.substring(0, 20) : 'no token');
+
         if (!accessToken) {
             throw new Error('No authentication token available');
         }
