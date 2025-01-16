@@ -57,6 +57,7 @@ async function signIn() {
 }
 
 // Handle OAuth callback and token exchange
+// Handle OAuth callback and token exchange
 async function handleCallback() {
     try {
         const urlParams = new URLSearchParams(window.location.search);
@@ -94,10 +95,12 @@ async function handleCallback() {
         }
 
         const tokens = await tokenResponse.json();
+        console.log('Token exchange successful');  // ADD THIS LOG HERE
         
         // Store tokens securely
         sessionStorage.setItem('access_token', tokens.access_token);
         sessionStorage.setItem('id_token', tokens.id_token);
+        console.log('Tokens stored in session');  // ADD THIS LOG HERE
         
         // Extract and store user email from ID token
         const payload = JSON.parse(atob(tokens.id_token.split('.')[1]));
@@ -110,27 +113,17 @@ async function handleCallback() {
         // Redirect to app
         window.location.href = '/app.html';
     } catch (error) {
-        console.error('Authentication failed:', error);
+        console.error('Authentication failed:', error);  // THIS LOG IS ALREADY THERE
         window.location.href = '/index.html';
     }
-}
-
-// Handle sign-out
-function signOut() {
-    // Clear all session data
-    sessionStorage.clear();
-    
-    const signOutUrl = `https://${config.domain}/logout?` +
-        `client_id=${config.clientId}&` +
-        `logout_uri=${encodeURIComponent(config.signoutUri)}`;
-    
-    window.location.href = signOutUrl;
 }
 
 // Verify authentication status
 function checkAuth() {
     const token = sessionStorage.getItem('access_token');
+    console.log('Checking auth token:', token ? 'Token exists' : 'No token found');
     if (!token) {
+        console.log('No token - redirecting to login');
         window.location.href = '/index.html';
         return false;
     }

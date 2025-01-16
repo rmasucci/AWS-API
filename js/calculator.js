@@ -4,26 +4,26 @@
  */
 
 async function calculate() {
-    if (!checkAuth()) return;
-
+    console.log('Calculate function called');
+    if (!checkAuth()) {
+        console.log('CheckAuth failed in calculate');
+        return;
+    }
     const num1 = document.getElementById('number1').value;
     const num2 = document.getElementById('number2').value;
     const resultElement = document.getElementById('result');
-
-    // Input validation
-    if (num1 === '' || num2 === '') {
-        resultElement.textContent = 'Please enter both numbers.';
-        return;
-    }
+    console.log('Input values:', num1, num2);
 
     try {
         const userEmail = sessionStorage.getItem('userEmail');
         const accessToken = sessionStorage.getItem('access_token');
+        console.log('User email and token:', userEmail ? 'Email exists' : 'No email', accessToken ? 'Token exists' : 'No token');
 
         if (!accessToken) {
             throw new Error('No authentication token available');
         }
 
+        console.log('Making API call to:', config.apiEndpoint);
         const response = await fetch(config.apiEndpoint, {
             method: 'POST',
             headers: {
@@ -38,20 +38,21 @@ async function calculate() {
         });
 
         if (!response.ok) {
+            console.log('API Response status:', response.status);
             if (response.status === 401) {
-        // Token might be expired
-        console.log('Auth Error Details:', await response.text());  // Log the error response
-        alert('Authentication failed - check console for details'); // Give us time to check
-        sessionStorage.clear();
-        setTimeout(() => {                     // Delay redirect
-            window.location.href = '/index.html';
-        }, 5000);  // 5 second delay
-        return;
+                console.log('Auth Error Details:', await response.text());
+                alert('Authentication failed - check console for details');
+                sessionStorage.clear();
+                setTimeout(() => {
+                    window.location.href = '/index.html';
+                }, 5000);
+                return;
             }
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
+        console.log('API Response:', data);
         resultElement.textContent = `The product is: ${data.product}`;
     } catch (error) {
         console.error('Calculation error:', error);
