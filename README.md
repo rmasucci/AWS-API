@@ -118,6 +118,61 @@ sequenceDiagram
     Lambda->>API: Response
     API->>SPA: Protected Data
 ```
+Detailed API Gateway authorization process:
+
+```mermaid
+sequenceDiagram
+    participant Browser
+    participant App
+    participant Cognito
+    participant APIGateway
+    participant Lambda
+    
+    Note over Browser,Cognito: PKCE Initialization
+    Browser->>App: Initiate login
+    App->>App: Generate code_verifier (random string)
+    App->>App: Generate code_challenge (SHA256(code_verifier))
+    
+    Note over Browser,Cognito: Authorization Request
+    App->>Cognito: Authorization Request
+    Note right of App: GET /oauth2/authorize<br/>client_id, redirect_uri, response_type=code<br/>code_challenge, code_challenge_method=S256
+    
+    Cognito->>Browser: Present login form
+    Browser->>Cognito: Submit username/password
+    
+    Note over Browser,Cognito: Authorization Response
+    Cognito-->>App: Redirect with authorization code
+    Note right of App: redirect_uri?code=xxx
+    
+    Note over Browser,Cognito: Token Exchange
+    App->>Cognito: Token Request
+    Note right of App: POST /oauth2/token<br/>grant_type=authorization_code<br/>code, code_verifier, client_id
+    
+    Cognito-->>App: Token Response
+    Note right of App: access_token, id_token<br/>refresh_token
+    
+    App->>App: Store tokens
+
+    Note over App,Lambda: API Requests with ID Token
+    App->>APIGateway: API Request
+    Note right of App: Authorization: Bearer {id_token}
+    
+    APIGateway->>Cognito: Fetch JWKS
+    Note right of APIGateway: GET /{userPoolRegion}/{userPoolId}/.well-known/jwks.json
+    Cognito-->>APIGateway: Return public keys
+    
+    APIGateway->>APIGateway: Validate ID Token
+    Note right of APIGateway: 1. Verify JWT signature<br/>2. Check token expiration<br/>3. Validate issuer claim:<br/>   https://cognito-idp.{region}.amazonaws.com/{userPoolId}<br/>4. Validate audience claim (client_id)
+    
+    alt Token Valid
+        APIGateway->>Lambda: Forward Request
+        Note right of APIGateway: Include decoded claims<br/>in request context
+        Lambda-->>APIGateway: Response
+        APIGateway-->>App: Success Response
+    else Token Invalid
+        APIGateway-->>App: 401 Unauthorized
+        App->>App: Refresh tokens if expired
+    end
 
 Security Considerations:
 1. Token Validation
