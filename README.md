@@ -1,7 +1,7 @@
 
 # Demonstration for using a Secure Serverless Web Application.
 
-## The purpose of this repo is to serve as a proof of concept and as an architecural prototype for a modern, serverless website.  This website uses AWS services inckusing AWS Cognito and API Gateway and demonstrates best practices for a modern SPA in AWS.  
+## The purpose of this repo is to serve as a proof of concept and as an architecural prototype for a modern, serverless website.  This website uses AWS services including AWS Cognito and API Gateway and demonstrates best practices for a modern SPA in AWS.  
 Bob Masucci 
 
 ### Table of Contents
